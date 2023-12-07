@@ -12,6 +12,7 @@ import (
 
 	"github.com/drand/kyber"
 	bls "github.com/drand/kyber-bls12381"
+	bn256 "github.com/drand/kyber/pairing/bn256"
 	"github.com/drand/kyber/sign"
 
 	// The package github.com/drand/kyber/sign/bls is deprecated because it is vulnerable to
@@ -174,10 +175,11 @@ const ShortSigSchemeID = "bls-unchained-on-g1"
 //
 // Deprecated: However this scheme is using the DST from G2 for Hash to Curve, which means it is not spec compliant.
 func NewPedersenBLSUnchainedSwapped() (cs *Scheme) {
-	var Pairing = bls.NewBLS12381SuiteWithDST(
-		[]byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_"), // this is the G2 DST instead of the G1 DST
-		[]byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_"), // default RFC9380 DST for G1
-	)
+	// var Pairing = bls.NewBLS12381SuiteWithDST(
+	// 	[]byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_"), // this is the G2 DST instead of the G1 DST
+	// 	[]byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_"), // default RFC9380 DST for G1
+	// )
+	var Pairing = bn256.NewSuite()
 
 	// We are using the same domain as for G2 but on G1, this is not spec-compliant with the BLS and HashToCurve RFCs.
 	var KeyGroup = Pairing.G2()
