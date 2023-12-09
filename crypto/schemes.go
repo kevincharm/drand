@@ -280,7 +280,7 @@ func NewPedersenBN254UNchainedOnG1Scheme() (cs *Scheme) {
 	}
 
 	return &Scheme{
-		Name:            ShortSigSchemeID,
+		Name:            BN254UnchainedOnG1SchemeID,
 		SigGroup:        SigGroup,
 		KeyGroup:        KeyGroup,
 		ThresholdScheme: ThresholdScheme,
