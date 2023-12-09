@@ -4,7 +4,7 @@ CatchupPeriod = "2s"
 GenesisTime = 1649948280
 TransitionTime = 1662041790
 GenesisSeed = "4c194718915cb446103b4959d132286176033ef9ab31824ced291ceaf9eb9b59"
-SchemeID = "bls-bn254-unchained-on-g1"
+SchemeID = "pedersen-bls-chained"
 ID = "default"
 
 [[Nodes]]
