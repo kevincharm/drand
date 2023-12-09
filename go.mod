@@ -2,7 +2,7 @@ module github.com/drand/drand
 
 go 1.20
 
-replace github.com/drand/kyber v1.2.0 => github.com/kevincharm/kyber v1.2.0-bn254
+replace github.com/drand/kyber v1.2.0 => github.com/kevincharm/kyber v1.2.0-bn254.90ca8a9
 
 require (
 	github.com/BurntSushi/toml v1.3.0
