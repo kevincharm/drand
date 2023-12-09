@@ -12,7 +12,7 @@ import (
 
 	"github.com/drand/kyber"
 	bls "github.com/drand/kyber-bls12381"
-	bn256 "github.com/drand/kyber/pairing/bn256"
+	bn254 "github.com/drand/kyber/pairing/bn254"
 	"github.com/drand/kyber/sign"
 
 	// The package github.com/drand/kyber/sign/bls is deprecated because it is vulnerable to
@@ -175,11 +175,10 @@ const ShortSigSchemeID = "bls-unchained-on-g1"
 //
 // Deprecated: However this scheme is using the DST from G2 for Hash to Curve, which means it is not spec compliant.
 func NewPedersenBLSUnchainedSwapped() (cs *Scheme) {
-	// var Pairing = bls.NewBLS12381SuiteWithDST(
-	// 	[]byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_"), // this is the G2 DST instead of the G1 DST
-	// 	[]byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_"), // default RFC9380 DST for G1
-	// )
-	var Pairing = bn256.NewSuite()
+	var Pairing = bls.NewBLS12381SuiteWithDST(
+		[]byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_"), // this is the G2 DST instead of the G1 DST
+		[]byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_"), // default RFC9380 DST for G1
+	)
 
 	// We are using the same domain as for G2 but on G1, this is not spec-compliant with the BLS and HashToCurve RFCs.
 	var KeyGroup = Pairing.G2()
@@ -250,6 +249,48 @@ func NewPedersenBLSUnchainedG1() (cs *Scheme) {
 	}
 }
 
+// BN254UnchainedOnG1SchemeID is the scheme id used to set unchained randomness on beacons with signatures on G1,
+// on the BN254 curve.
+const BN254UnchainedOnG1SchemeID = "bls-bn254-unchained-on-g1"
+
+// NewPedersenBLSUnchainedSwapped instantiate a scheme of type "bls-unchained-on-g1" which is also unchained, only
+// hashing the round number as the message being signed in beacons. This scheme is also compatible with
+// "timelock encryption" as done by tlock.
+// This schemes has the group public key on G2, so 96 bytes, and the beacon signatures on G1, so 48 bytes.
+// This means databases of beacons produced with this scheme are almost half the size of the other schemes.
+//
+// Deprecated: However this scheme is using the DST from G2 for Hash to Curve, which means it is not spec compliant.
+func NewPedersenBN254UNchainedOnG1Scheme() (cs *Scheme) {
+	var Pairing = bn254.NewSuite()
+
+	// We are using the same domain as for G2 but on G1, this is not spec-compliant with the BLS and HashToCurve RFCs.
+	var KeyGroup = Pairing.G2()
+	var SigGroup = Pairing.G1()
+	// using G1 for the ThresholdScheme since it allows beacons to have shorter signatures, reducing the size of any
+	// database storing all existing beacons by half compared to using G2.
+	var ThresholdScheme = tbls.NewThresholdSchemeOnG1(Pairing)
+	var AuthScheme = signBls.NewSchemeOnG1(Pairing)
+	var DKGAuthScheme = schnorr.NewScheme(&schnorrSuite{KeyGroup})
+	var IdentityHashFunc = func() hash.Hash { h, _ := blake2b.New256(nil); return h }
+	// Unchained means we're only hashing the round number
+	var DigestFunc = func(b hashableBeacon) []byte {
+		h := sha256.New()
+		_ = binary.Write(h, binary.BigEndian, b.GetRound())
+		return h.Sum(nil)
+	}
+
+	return &Scheme{
+		Name:            ShortSigSchemeID,
+		SigGroup:        SigGroup,
+		KeyGroup:        KeyGroup,
+		ThresholdScheme: ThresholdScheme,
+		AuthScheme:      AuthScheme,
+		DKGAuthScheme:   DKGAuthScheme,
+		IdentityHash:    IdentityHashFunc,
+		DigestBeacon:    DigestFunc,
+	}
+}
+
 func SchemeFromName(schemeName string) (*Scheme, error) {
 	switch schemeName {
 	case DefaultSchemeID:
@@ -260,12 +301,14 @@ func SchemeFromName(schemeName string) (*Scheme, error) {
 		return NewPedersenBLSUnchainedG1(), nil
 	case ShortSigSchemeID:
 		return NewPedersenBLSUnchainedSwapped(), nil
+	case BN254UnchainedOnG1SchemeID:
+		return NewPedersenBN254UNchainedOnG1Scheme(), nil
 	default:
 		return nil, fmt.Errorf("invalid scheme name '%s'", schemeName)
 	}
 }
 
-var schemeIDs = []string{DefaultSchemeID, UnchainedSchemeID, SigsOnG1ID, ShortSigSchemeID}
+var schemeIDs = []string{DefaultSchemeID, UnchainedSchemeID, SigsOnG1ID, ShortSigSchemeID, BN254UnchainedOnG1SchemeID}
 
 // ListSchemes will return a slice of valid scheme ids
 func ListSchemes() []string {
