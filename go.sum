@@ -790,8 +790,8 @@ github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8
 github.com/jung-kurt/gofpdf v1.0.3-0.20190309125859-24315acbbda5/go.mod h1:7Id9E/uU8ce6rXgefFLlgrJj/GYY22cpxn+r32jIOes=
 github.com/kabukky/httpscerts v0.0.0-20150320125433-617593d7dcb3 h1:Iy7Ifq2ysilWU4QlCx/97OoI4xT1IV7i8byT/EyIT/M=
 github.com/kabukky/httpscerts v0.0.0-20150320125433-617593d7dcb3/go.mod h1:BYpt4ufZiIGv2nXn4gMxnfKV306n3mWXgNu/d2TqdTU=
-github.com/kevincharm/kyber v1.2.0-bn254.3155a50 h1:kWrM8b3eJcYTvG09iS8qwRjLyvRS1UEspWdJYvbXvYE=
-github.com/kevincharm/kyber v1.2.0-bn254.3155a50/go.mod h1:E/LZahG5OJu48AtjidKQX7HFx+1j1nsglPSljq7pwBM=
+github.com/kevincharm/kyber v1.2.0-bn254.03b0082 h1:cYcHN40az+PUo0CyU2mGYVz9QfeEe6JHGBtKmxFz0Dc=
+github.com/kevincharm/kyber v1.2.0-bn254.03b0082/go.mod h1:E/LZahG5OJu48AtjidKQX7HFx+1j1nsglPSljq7pwBM=
 github.com/kilic/bls12-381 v0.1.0 h1:encrdjqKMEvabVQ7qYOKu1OvhqpK4s47wDYtNiPtlp4=
 github.com/kilic/bls12-381 v0.1.0/go.mod h1:vDTTHJONJ6G+P2R74EhnyotQDTliQDnFEwhdmfzw1ig=
 github.com/kisielk/errcheck v1.2.0/go.mod h1:/BMXB+zMLi60iA8Vv6Ksmxu/1UDYcXs4uQLJ+jE2L00=
