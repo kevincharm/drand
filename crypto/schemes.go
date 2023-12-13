@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"golang.org/x/crypto/blake2b"
+	"golang.org/x/crypto/sha3"
 
 	"github.com/drand/kyber"
 	bls "github.com/drand/kyber-bls12381"
@@ -253,17 +254,12 @@ func NewPedersenBLSUnchainedG1() (cs *Scheme) {
 // on the BN254 curve.
 const BN254UnchainedOnG1SchemeID = "bls-bn254-unchained-on-g1"
 
-// NewPedersenBLSUnchainedSwapped instantiate a scheme of type "bls-unchained-on-g1" which is also unchained, only
-// hashing the round number as the message being signed in beacons. This scheme is also compatible with
-// "timelock encryption" as done by tlock.
-// This schemes has the group public key on G2, so 96 bytes, and the beacon signatures on G1, so 48 bytes.
-// This means databases of beacons produced with this scheme are almost half the size of the other schemes.
-//
-// Deprecated: However this scheme is using the DST from G2 for Hash to Curve, which means it is not spec compliant.
+// NewPedersenBN254UNchainedOnG1Scheme instantiates a scheme of type "bls-bn254-unchained-on-g1" which is also
+// unchained, only hashing the round number as the message being signed in beacons. This scheme is configured to
+// be optimally compatible with the EVM.
 func NewPedersenBN254UNchainedOnG1Scheme() (cs *Scheme) {
 	var Pairing = bn254.NewSuite()
 
-	// We are using the same domain as for G2 but on G1, this is not spec-compliant with the BLS and HashToCurve RFCs.
 	var KeyGroup = Pairing.G2()
 	var SigGroup = Pairing.G1()
 	// using G1 for the ThresholdScheme since it allows beacons to have shorter signatures, reducing the size of any
@@ -274,7 +270,7 @@ func NewPedersenBN254UNchainedOnG1Scheme() (cs *Scheme) {
 	var IdentityHashFunc = func() hash.Hash { h, _ := blake2b.New256(nil); return h }
 	// Unchained means we're only hashing the round number
 	var DigestFunc = func(b hashableBeacon) []byte {
-		h := sha256.New()
+		h := sha3.NewLegacyKeccak256()
 		_ = binary.Write(h, binary.BigEndian, b.GetRound())
 		return h.Sum(nil)
 	}
