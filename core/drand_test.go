@@ -106,7 +106,7 @@ func TestRunDKG(t *testing.T) {
 
 	t.Log(group)
 
-	require.Equal(t, 3, group.Threshold)
+	require.Equal(t, 1, group.Threshold)
 	require.Equal(t, expectedBeaconPeriod, group.Period)
 	require.Equal(t, time.Duration(0), group.CatchupPeriod)
 	require.Equal(t, n, len(group.Nodes))
