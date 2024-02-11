@@ -254,10 +254,10 @@ func NewPedersenBLSUnchainedG1() (cs *Scheme) {
 // on the BN254 curve.
 const BN254UnchainedOnG1SchemeID = "bls-bn254-unchained-on-g1"
 
-// NewPedersenBN254UNchainedOnG1Scheme instantiates a scheme of type "bls-bn254-unchained-on-g1" which is also
+// NewPedersenBLSBN254UnchainedOnG1Scheme instantiates a scheme of type "bls-bn254-unchained-on-g1" which is also
 // unchained, only hashing the round number as the message being signed in beacons. This scheme is configured to
 // be optimally compatible with the EVM.
-func NewPedersenBN254UNchainedOnG1Scheme() (cs *Scheme) {
+func NewPedersenBLSBN254UnchainedOnG1Scheme() (cs *Scheme) {
 	var Pairing = bn254.NewSuite()
 
 	var KeyGroup = Pairing.G2()
@@ -298,7 +298,7 @@ func SchemeFromName(schemeName string) (*Scheme, error) {
 	case ShortSigSchemeID:
 		return NewPedersenBLSUnchainedSwapped(), nil
 	case BN254UnchainedOnG1SchemeID:
-		return NewPedersenBN254UNchainedOnG1Scheme(), nil
+		return NewPedersenBLSBN254UnchainedOnG1Scheme(), nil
 	default:
 		return nil, fmt.Errorf("invalid scheme name '%s'", schemeName)
 	}
